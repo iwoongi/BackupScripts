@@ -72,7 +72,11 @@ def updateLaptime():
 
 # 메모장 실행 → 랩타임 보기
 def openWordpad():
-    pass
+    readListbox = ""
+    for item in listbox_lapTime.get(0, tk.END):
+        readListbox += f"{item}\n"
+
+    print(readListbox)
 
 
 # ==================================================================== GUI
@@ -104,7 +108,14 @@ timeText = tk.Label(
 timeText.pack(side="top", fill="x", expand=True)
 
 startButton = tk.Button(
-    frame, text="시작", bg=BTNCOLOR, fg=FONTCOLOR, font=btnFont, command=actionTimer
+    frame,
+    text="시작",
+    bg=BTNCOLOR,
+    fg=FONTCOLOR,
+    font=btnFont,
+    activebackground=BGCOLOR,
+    activeforeground=FONTCOLOR,
+    command=actionTimer,
 )
 startButton.pack(side="bottom", fill="x")
 
@@ -169,6 +180,7 @@ def on_release(key):
 
 # 종료 프로토콜
 def on_closing():
+    openWordpad()
     listener.stop()
     app.destroy()
 
