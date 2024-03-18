@@ -15,6 +15,9 @@ CHOOSE_CSVFILE = "CSV 파일을 선택하세요."
 CHOOSE_VIDEOFOLDER = "OBS 비디오파일이 있는 폴더를 선택하세요."
 FILE_EXIST = "O"
 
+sizeProcess = 0
+finProcess = []
+
 
 # ========================================================== func
 # 경로 유효성 체크 : curDir
@@ -144,12 +147,22 @@ def move_copy_files(fileList):
 
     for file in fileList:
         # do_process(file, isCopy)
+        formatIndex = 0
+        if os.path.exists(make_filePath(file, 0)):
+            formatIndex = 0
+        elif os.path.exists(make_filePath(file, 1)):
+            formatIndex = 1
+        else:
+            formatIndex = -1
 
-        fileName = str(f"{file}.{FILEFORMAT[0]}")
-        src = os.path.join(srcPath, fileName)
-        dest = os.path.join(destPath, fileName)
+        if formatIndex == -1:
+            print("file이 없습니다.")
+            finProcess.append(str(file))
+        else:
+            fileName = str(f"{file}.{FILEFORMAT[formatIndex]}")
+            src = os.path.join(srcPath, fileName)
+            dest = os.path.join(destPath, fileName)
 
-        if os.path.exists(src):
             srcSize = os.path.getsize(src)
 
             t1 = threading.Thread(
@@ -163,9 +176,6 @@ def move_copy_files(fileList):
             )
             t2.daemon = True
             t2.start()
-        else:
-            print("file이 없습니다.")
-            finProcess.append(str(file))
 
     checkCnt = 0
     for data in finProcess:
@@ -176,8 +186,10 @@ def move_copy_files(fileList):
         issue_text.config(text=f"{checkCnt}개의 파일이 처리되었습니다.")
 
 
-sizeProcess = 0
-finProcess = []
+# File Path Make
+def make_filePath(name, index):
+    fileName = f"{name}.{FILEFORMAT[index]}"
+    return os.path.join(srcPath, fileName)
 
 
 # Check File Size = Thread2
