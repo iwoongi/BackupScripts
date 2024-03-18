@@ -369,9 +369,6 @@ frame_issue.pack(fill="x", padx=5, pady=5, ipady=5)
 issue_text = Label(frame_issue, text="")
 issue_text.pack(fill="x", side="top", padx=5)
 
-scroll_issue = Scrollbar(frame_issue, width=2)
-scroll_issue.pack(side="right", fill="y")
-
 # 실행 프레임
 frame_run = Frame(app)
 frame_run.pack(fill="x", padx=5, pady=5)
