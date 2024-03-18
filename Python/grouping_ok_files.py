@@ -233,8 +233,7 @@ def check_finProcess():
     if btn_start["state"] == NORMAL:
         return False
     else:
-        isCopy = "복사" if option_var.get() == 1 else "이동"
-        update_progress(f"{len(finProcess)}/{sizeProcess}... {isCopy}완료!")
+        update_progress(f"{len(finProcess)}/{sizeProcess}... 작업 완료!")
 
         if len(finProcess) == sizeProcess:
             switch_buttons(True)
