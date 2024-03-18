@@ -10,13 +10,13 @@ import pandas as pd
 
 # ========================================================== Var
 FILEFORMAT = ["mp4", "mov"]
-SELECTOPTION = ["ok", "no", "keep"]
 CHOOSE_CSVFILE = "CSV 파일을 선택하세요."
 CHOOSE_VIDEOFOLDER = "OBS 비디오파일이 있는 폴더를 선택하세요."
 FILE_EXIST = "O"
 
 sizeProcess = 0
 finProcess = []
+wrongDataList = []
 
 
 # ========================================================== func
@@ -105,6 +105,9 @@ def find_okList_inCSV():
 
         if check == "ok":
             okList.append(take_list.loc[idx])
+        elif not (check == "ng" or check == "keep"):
+            wrongDataList.append(take_list.loc[idx])
+
         update_progress("CSV data 탐색중...")
         idx += 1
     update_progress("CSV data 탐색완료!")
@@ -179,7 +182,7 @@ def move_copy_files(fileList):
 
     checkCnt = 0
     for data in finProcess:
-        if data != FILE_EXIST:
+        if data == FILE_EXIST:
             checkCnt += 1
     if checkCnt == len(finProcess):
         switch_buttons(True)
@@ -267,11 +270,26 @@ def final_issue_massage():
     for data in finProcess:
         if data != FILE_EXIST:
             issue_file = f"{data}" if issue_file == "" else f"{issue_file}\n{data}"
-    msg = (
-        "issue 없음."
-        if issue_file == ""
-        else f"{issue_file}\n위 파일이 정상 처리 되지 않았습니다."
-    )
+
+    msg = ""
+    if issue_file == "" and len(wrongDataList) == 0:
+        msg = "issue 없음."
+    else:
+        wrongData = ""
+        for data in wrongDataList:
+            wrongData = f"{data}" if wrongData == "" else f"{wrongData}\n{data}"
+
+        msg = (
+            f"{issue_file}\n위 파일이 정상적으로 처리 되지 않았습니다."
+            if wrongData == ""
+            else f"{issue_file}\n위 파일이 정상적으로 처리 되지 않았습니다.\n===============\n{wrongData}\n위 데이터의 Select 옵션데이터를 확인해주세요."
+        )
+
+    # msg = (
+    #     "issue 없음."
+    #     if issue_file == ""
+    #     else f"{issue_file}\n위 파일이 정상 처리 되지 않았습니다."
+    # )
     issue_text.config(text=msg)
     # print(f"{issue_file}\n위 파일이 정상 처리 되지 않았습니다.")
 
@@ -350,6 +368,9 @@ frame_issue.pack(fill="x", padx=5, pady=5, ipady=5)
 
 issue_text = Label(frame_issue, text="")
 issue_text.pack(fill="x", side="top", padx=5)
+
+scroll_issue = Scrollbar(frame_issue, width=2)
+scroll_issue.pack(side="right", fill="y")
 
 # 실행 프레임
 frame_run = Frame(app)
