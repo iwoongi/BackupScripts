@@ -174,8 +174,8 @@ def move_copy_files(fileList):
             formatIndex = -1
 
         if formatIndex == -1:
-            print("file이 없습니다.")
-            finProcess.append(str(file), "noFile")
+            # print("file이 없습니다.")
+            finProcess.append(str(file))
         else:
             fileName = str(f"{file}.{FILEFORMAT[formatIndex]}")
             src = os.path.join(srcPath, fileName)
@@ -225,7 +225,7 @@ def file_checker(src_size, dest_path):
         time.sleep(0.02)
 
     # print("percentage", 100)
-    finProcess.append(FILE_EXIST, "")
+    finProcess.append(FILE_EXIST)
     check_finProcess()
 
 
@@ -295,14 +295,14 @@ def final_issue_massage():
             wrongData = f"{data}" if wrongData == "" else f"{wrongData}\n{data}"
 
         msg = (
-            f"{issue_file}\n위 파일이 정상적으로 처리 되지 않았습니다."
+            f"{issue_file}\n위 파일이 {srcPath}에 없습니다."
             if wrongData == ""
-            else f"{issue_file}\n위 파일이 정상적으로 처리 되지 않았습니다.\n===============\n{wrongData}\n위 데이터의 Select 옵션데이터를 확인해주세요."
+            else f"{issue_file}\n위 파일이 {srcPath}에 없습니다.\n===============\n{wrongData}\n위 데이터의 Select 옵션데이터를 확인해주세요."
         )
         logViewer.writeLog(msg, srcPath)
         logViewer.openLog()
 
-    issue_text.config(text="log 메시지를 확인해주세요.")
+    issue_text.config(text="log.txt를 확인해주세요.")
 
 
 # 메시지 리셋 & finProcess 리셋
