@@ -6,6 +6,7 @@ from tkinter import filedialog
 import tkinter.messagebox as msgbox
 from tkinter import *
 import pandas as pd
+import logViewer
 
 
 # ========================================================== Var
@@ -49,13 +50,21 @@ def road_csv():
     if file:
         global obs_data
 
-        if ".csv" in file:
-            obs_data = pd.read_csv(file, encoding="cp949")
-        elif ".xlsx" in file:
-            obs_data = pd.read_excel(file, encoding="utf-8")
-        else:
-            msgbox.showinfo("알림", "CSV, XLSX파일을 불러오세요.")
-            return
+        try:
+            if ".csv" in file:
+                obs_data = pd.read_csv(file, encoding="cp949")
+                # obs_data = pd.read_csv(file, engine="python")
+            elif ".xlsx" in file:
+                obs_data = pd.read_excel(file, encoding="cp949")
+                # obs_data = pd.read_excel(file, engine="python")
+            else:
+                msgbox.showinfo("알림", "CSV, XLSX파일을 불러오세요.")
+                return
+        except:
+            msgbox.showinfo(
+                "알림", "CSV, XLSX파일에 문제가 있습니다.\n파일을 확인해주세요."
+            )
+            obs_data = None
 
         lbl_csv_path.config(text=file)
         # print(obs_data.head())
@@ -84,6 +93,12 @@ def set_folder():
 
 # 시작 버튼 동작 = btn_start
 def find_okFile():
+    if obs_data.empty:
+        msgbox.showinfo(
+            "알림", "CSV, XLSX파일에 문제가 있습니다.\n파일을 확인해주세요."
+        )
+        return
+
     if check_finProcess():
         return
     reset_processData()  # issue항목 텍스트 및 데이터 리셋
@@ -160,7 +175,7 @@ def move_copy_files(fileList):
 
         if formatIndex == -1:
             print("file이 없습니다.")
-            finProcess.append(str(file))
+            finProcess.append(str(file), "noFile")
         else:
             fileName = str(f"{file}.{FILEFORMAT[formatIndex]}")
             src = os.path.join(srcPath, fileName)
@@ -210,7 +225,7 @@ def file_checker(src_size, dest_path):
         time.sleep(0.02)
 
     # print("percentage", 100)
-    finProcess.append(FILE_EXIST)
+    finProcess.append(FILE_EXIST, "")
     check_finProcess()
 
 
@@ -284,14 +299,10 @@ def final_issue_massage():
             if wrongData == ""
             else f"{issue_file}\n위 파일이 정상적으로 처리 되지 않았습니다.\n===============\n{wrongData}\n위 데이터의 Select 옵션데이터를 확인해주세요."
         )
+        logViewer.writeLog(msg, srcPath)
+        logViewer.openLog()
 
-    # msg = (
-    #     "issue 없음."
-    #     if issue_file == ""
-    #     else f"{issue_file}\n위 파일이 정상 처리 되지 않았습니다."
-    # )
-    issue_text.config(text=msg)
-    # print(f"{issue_file}\n위 파일이 정상 처리 되지 않았습니다.")
+    issue_text.config(text="log 메시지를 확인해주세요.")
 
 
 # 메시지 리셋 & finProcess 리셋
